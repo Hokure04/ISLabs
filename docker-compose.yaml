@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "hokure"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "user"
+#    volumes:
+#      - ./init_scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5555:5432"
+
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
+
+#mvn clean install && docker compose down -v && docker compose build && docker compose up
