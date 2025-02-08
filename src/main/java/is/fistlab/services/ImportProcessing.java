@@ -1,4 +1,10 @@
 package is.fistlab.services;
 
-public interface ImportProcessing extends SeqServiceUserProcessing, AsyncServiceUserProcessing{
+import is.fistlab.database.entities.User;
+import is.fistlab.dto.PersonDto;
+
+import java.util.List;
+
+public interface ImportProcessing {
+    void runImport(List<PersonDto> personDtoList, User user);
 }

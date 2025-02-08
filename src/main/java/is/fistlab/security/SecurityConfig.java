@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/manage/**").authenticated()
                         .requestMatchers("/api/v1/admin/console/**").authenticated()
+                        .requestMatchers("/api/v1/import/**").authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

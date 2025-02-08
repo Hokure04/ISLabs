@@ -18,7 +18,7 @@ import static is.fistlab.utils.parser.FieldsHelper.*;
 public class CSVParser {
     private static final String[] HEADERS = {"personName","personEyeColor", "personHairColor",
             "personLocationX", "personLocationY","personLocationZ","coordinateX","coordinateY",
-            "personHeight","personNationality","birthday"};
+            "personHeight","personNationality","birthday","timestamp"};
 
     public static ArrayList<PersonDto> getPersonFromFile(final File file){
         final ArrayList<PersonDto> list = new ArrayList<>();

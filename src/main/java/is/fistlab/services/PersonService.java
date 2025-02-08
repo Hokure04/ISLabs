@@ -29,4 +29,5 @@ public interface PersonService {
 
     Pageable getPageAfterSort(int page, int size, String sortBy, String sortDirection);
 
+    List<Person> addAll(List<Person> persons);
 }

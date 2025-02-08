@@ -65,6 +65,13 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
         return personRepository.findAll(pageable);
     }
 
+    @Override
+//    @Transactional
+    public List<Person> addAll(List<Person> persons) {
+        var savedList = personRepository.saveAll(persons);
+        log.info("Saved {} persons", savedList.size());
+        return savedList;
+    }
 
     @Override
     public Person updatePerson(final Person person) {
