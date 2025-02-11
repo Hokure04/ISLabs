@@ -31,10 +31,10 @@ public class ImportServiceImpl implements ImportService {
     private static final Timestamp TIME_MARK = Timestamp.valueOf("2024-12-12 00:00:00");
 
     @Override
-    public String importFile(MultipartFile file, User user, Timestamp userTimestamp) {
+    public String importFile(MultipartFile file, User user, Timestamp userTimestamp) throws IOException {
         List<PersonDto> personDtoList = CSVParser.getPersonFromFile(getFile(file));
         String result;
-        importProcessing.runImport(personDtoList, user);
+        importProcessing.runImport(personDtoList, user, getFile(file));
         return "Удали меня";
     }
 

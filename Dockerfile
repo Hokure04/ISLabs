@@ -4,6 +4,7 @@ LABEL authors="jaba"
 
 WORKDIR /app
 
-COPY target/ .
 
-CMD ["java", "-jar", "FistLab-1.0.0.jar"]
+COPY target/*.jar app.jar
+
+CMD ["java", "-jar", "app.jar"]

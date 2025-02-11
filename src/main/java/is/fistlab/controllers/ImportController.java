@@ -3,6 +3,7 @@ package is.fistlab.controllers;
 import is.fistlab.database.entities.Operation;
 import is.fistlab.security.sevices.AuthService;
 import is.fistlab.services.ImportService;
+import is.fistlab.services.MinioService;
 import is.fistlab.services.OperationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class ImportController {
     private final ImportService importService;
     private final AuthService authService;
     private final OperationService operationService;
+    private final MinioService minioService;
 
     @PostMapping("/csv")
     public ResponseEntity<Response<Integer>> importPerson(@RequestParam("file") final MultipartFile file, @RequestParam("userTimestamp") final Timestamp userTimestamp) throws IOException{

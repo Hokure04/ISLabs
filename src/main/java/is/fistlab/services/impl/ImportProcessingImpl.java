@@ -1,5 +1,6 @@
 package is.fistlab.services.impl;
 
+import io.minio.errors.MinioException;
 import is.fistlab.database.entities.*;
 import is.fistlab.dto.PersonDto;
 import is.fistlab.mappers.PersonMapper;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,17 +25,19 @@ public class ImportProcessingImpl implements ImportProcessing {
     private final LocationService locationService;
     private final CoordinateService coordinateService;
     private final OperationService operationService;
+    private final MinioService minioService;
 
     @Transactional
     @Override
-    public void runImport(List<PersonDto> personDtoList, User user){
+    public void runImport(List<PersonDto> personDtoList, User user, File file){
         List<Person> personList = new ArrayList<>(personDtoList.size());
         List<Location> locationList = new ArrayList<>(personDtoList.size());
         List<Coordinates> coordinatesList = new ArrayList<>(personDtoList.size());
-        var operation = new Operation();
+        Operation operation = new Operation();
         operation.setUser(user);
         operation.setIsFinished(false);
 
+        String fileNameForMinio = null;
         try{
             for(var personDto : personDtoList){
                 var person = PersonMapper.toEntity(personDto);
@@ -47,13 +52,28 @@ public class ImportProcessingImpl implements ImportProcessing {
             entityManager.flush();
             var listSavedPerson = personService.addAll(personList);
 
+            fileNameForMinio = minioService.uploadFile(user.getUsername(), file);
             operation.setIsFinished(true);
             operation.setAmountOfObjectSaved(listSavedPerson.size());
             operationService.add(operation);
         }catch (RuntimeException e){
+            log.error("Error during import operation, rolling back", e);
+
+            if(fileNameForMinio != null){
+                try{
+                    minioService.deleteFile(user.getUsername(), file.getName());
+                    log.info("File removed from Minio due to failure {}", fileNameForMinio);
+                }catch (Exception ex){
+                    log.error("Error removing file file from Minio {}", fileNameForMinio, ex);
+                }
+            }
             operation.setIsFinished(false);
             operationService.add(operation);
-            throw e;
+            throw new RuntimeException("Operation filed, all changes rolled back", e);
+        } catch (MinioException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
