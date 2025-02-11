@@ -20,7 +20,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -63,7 +62,6 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.MANDATORY)
     public Page<Person> getAllPersons(final Pageable pageable) {
         return personRepository.findAll(pageable);
     }
