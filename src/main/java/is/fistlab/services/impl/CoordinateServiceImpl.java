@@ -5,6 +5,7 @@ import is.fistlab.database.repositories.CoordinatesRepository;
 import is.fistlab.services.CoordinateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     private final CoordinatesRepository coordinatesRepository;
 
     @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public List<Coordinates> addAll(List<Coordinates> coordinatesList){
         return coordinatesRepository.saveAll(coordinatesList);
     }

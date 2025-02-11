@@ -22,4 +22,6 @@ public class Operation {
     @Column(name = "is_finished")
     private Boolean isFinished;
 
+    private String filename;
+
 }

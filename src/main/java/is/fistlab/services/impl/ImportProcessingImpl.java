@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Component
 @Slf4j
+@Transactional(propagation = Propagation.REQUIRED)
 @AllArgsConstructor
 public class ImportProcessingImpl implements ImportProcessing {
     private final PersonService personService;
@@ -54,6 +56,7 @@ public class ImportProcessingImpl implements ImportProcessing {
 
             fileNameForMinio = minioService.uploadFile(user.getUsername(), file);
             operation.setIsFinished(true);
+            operation.setFilename(file.getName());
             operation.setAmountOfObjectSaved(listSavedPerson.size());
             operationService.add(operation);
         }catch (RuntimeException e){

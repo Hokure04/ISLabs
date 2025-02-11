@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -29,7 +30,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@Transactional
 @AllArgsConstructor
 @Service
 public class PersonServiceImpl implements PersonService, SpecialButtonsService {
@@ -39,6 +39,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
     private final CoordinatesRepository coordinatesRepository;
 
     @Override
+    @Transactional
     public void createPerson(final Person person) {
         var creator = authenticationUtils.getCurrentUserFromContext();
         person.setCreator(creator);
@@ -47,6 +48,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
     }
 
     @Override
+    @Transactional
     public void deletePersonById(final Long id) {
         Optional<Person> deletingPerson = personRepository.findById(id);
 
@@ -61,6 +63,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public Page<Person> getAllPersons(final Pageable pageable) {
         return personRepository.findAll(pageable);
     }
@@ -74,6 +77,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
     }
 
     @Override
+    @Transactional
     public Person updatePerson(final Person person) {
         if (!personRepository.existsById(person.getId())) {
             log.error("Person with id: {} does not exist, update is impossible", person.getId());

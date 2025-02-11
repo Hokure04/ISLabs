@@ -1,6 +1,5 @@
 package is.fistlab.controllers;
 
-import is.fistlab.database.entities.Location;
 import is.fistlab.database.entities.Person;
 import is.fistlab.database.enums.Color;
 import is.fistlab.database.enums.Country;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;

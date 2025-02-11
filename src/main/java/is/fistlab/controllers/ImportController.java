@@ -1,5 +1,6 @@
 package is.fistlab.controllers;
 
+import io.minio.errors.MinioException;
 import is.fistlab.database.entities.Operation;
 import is.fistlab.security.sevices.AuthService;
 import is.fistlab.services.ImportService;
@@ -7,11 +8,12 @@ import is.fistlab.services.MinioService;
 import is.fistlab.services.OperationService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -44,5 +46,20 @@ public class ImportController {
         var currentUser = authService.getCurrentUser();
         var operations = operationService.getOperations(currentUser);
         return ResponseEntity.ok(operations);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam("filename") String filename){
+        try{
+            InputStream fileStream = minioService.downloadFile(filename);
+            byte[] fileContent = fileStream.readAllBytes();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDisposition(ContentDisposition.attachment().filename(filename).build());
+            return ResponseEntity.ok().headers(headers).body(fileContent);
+        }catch (MinioException | IOException e){
+            log.error("Оибка при скачивании файла {}", filename, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }

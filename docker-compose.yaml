@@ -44,13 +44,5 @@ services:
 volumes:
   minio_data:
 
-#  app:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - postgres
 
 #mvn clean install && docker compose down -v && docker compose build && docker compose up
