@@ -52,31 +52,39 @@ public class ImportProcessingImpl implements ImportProcessing {
 
             locationService.addAll(locationList);
             entityManager.flush();
-            var listSavedPerson = personService.addAll(personList);
 
             fileNameForMinio = minioService.uploadFile(user.getUsername(), file);
-            operation.setIsFinished(true);
             operation.setFilename(file.getName());
-            operation.setAmountOfObjectSaved(listSavedPerson.size());
-            operationService.add(operation);
-        }catch (RuntimeException e){
-            log.error("Error during import operation, rolling back", e);
+            /*try{
+                fileNameForMinio = minioService.uploadFile(user.getUsername(), file);
+                operation.setFilename(file.getName());
+            }catch (Exception e){
+                log.warn("Minio unavailable, skipping file upload: {}", e.getMessage());
+            }*/
 
-            if(fileNameForMinio != null){
-                try{
-                    minioService.deleteFile(user.getUsername(), file.getName());
-                    log.info("File removed from Minio due to failure {}", fileNameForMinio);
-                }catch (Exception ex){
-                    log.error("Error removing file file from Minio {}", fileNameForMinio, ex);
-                }
+            prepareCommit(personList, operation);
+        }catch (Exception e){
+            log.error("Error during import operation, rolling back", e);
+            rollback(fileNameForMinio, user, file.getName());
+            throw new RuntimeException("Ошибка импорта, откатываем изменения", e);
+        }
+    }
+
+    private void prepareCommit(List<Person> personList, Operation operation){
+        personService.addAll(personList);
+        operation.setIsFinished(true);
+        operation.setAmountOfObjectSaved(personList.size());
+        operationService.add(operation);
+    }
+
+    private void rollback(String fileNameForMinio, User user, String originalFileName){
+        if(fileNameForMinio != null){
+            try{
+                minioService.deleteFile(user.getUsername(), originalFileName);
+                log.info("Файл {} удален из Minio из-за ошибки", fileNameForMinio);
+            }catch (Exception ex){
+                log.error("Ошибка при удалении файла из Minio {}", fileNameForMinio, ex);
             }
-            operation.setIsFinished(false);
-            operationService.add(operation);
-            throw new RuntimeException("Operation filed, all changes rolled back", e);
-        } catch (MinioException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

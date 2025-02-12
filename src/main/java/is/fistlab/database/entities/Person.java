@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,17 +31,21 @@ public class Person implements CreatorAware {
     private String name; //Поле не может быть null, Строка не может быть пустой
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Цвет глаз не может быть null")
     private Color eyeColor; //Поле может быть null
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Цвет волос не может быть null")
     private Color hairColor; //Поле может быть null
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(nullable = false, referencedColumnName = "id")
+    @NotNull(message = "Локация не может быть null")
     private Location location; //Поле не может быть null
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(nullable = false, referencedColumnName = "id")
+    @NotNull(message = "Координаты не могут быть null")
     private Coordinates coordinates; //Поле не может быть null
 
     @Min(1)

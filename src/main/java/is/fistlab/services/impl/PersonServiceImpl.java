@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +40,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
 
     @Override
     @Transactional
-    public void createPerson(final Person person) {
+    public void createPerson(@Valid final Person person) {
         var creator = authenticationUtils.getCurrentUserFromContext();
         person.setCreator(creator);
         personRepository.save(person);
@@ -68,7 +69,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
 
     @Override
 //    @Transactional
-    public List<Person> addAll(List<Person> persons) {
+    public List<Person> addAll(@Valid List<Person> persons) {
         var savedList = personRepository.saveAll(persons);
         log.info("Saved {} persons", savedList.size());
         return savedList;
@@ -76,7 +77,7 @@ public class PersonServiceImpl implements PersonService, SpecialButtonsService {
 
     @Override
     @Transactional
-    public Person updatePerson(final Person person) {
+    public Person updatePerson(@Valid  final Person person) {
         if (!personRepository.existsById(person.getId())) {
             log.error("Person with id: {} does not exist, update is impossible", person.getId());
             throw new PersonNotExistException("Пользователь не найден");

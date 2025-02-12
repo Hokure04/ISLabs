@@ -29,7 +29,8 @@ public class PersonExceptionHandler {
     @ExceptionHandler(InvalidActionException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Response<String> personNotExist(final InvalidActionException exc) {
-        return new Response<>(exc.getMessage());
+        throw new RuntimeException(exc.getMessage());
+//        return new Response<>(exc.getMessage());
     }
 
     @ExceptionHandler(NotEnoughRights.class)
